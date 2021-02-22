@@ -219,22 +219,20 @@ class Processor
      */
     private function generatePreview(string $name): void
     {
-        if(!file_exists($this->videoStorage($name, true))) {
-            try {
-                $media = $this->openVideo($this->videoStorage($name));
-                $media->filters()->clip(TimeCode::fromSeconds($this->start), TimeCode::fromSeconds($this->seconds));
-                $media->save($this->getNewFormat(), $this->videoStorage($name, true));
+        try {
+            $media = $this->openVideo($this->videoStorage($name));
+            $media->filters()->clip(TimeCode::fromSeconds($this->start), TimeCode::fromSeconds($this->seconds));
+            $media->save($this->getNewFormat(), $this->videoStorage($name, true));
 
-                if ($this->console) {
-                    $this->console->success('['.$name.'] preview created');
-                }
-            } catch (Exception $e) {
-                if ($this->console) {
-                    $this->console->error('['.$name.'] '.$e->getMessage());
-                }
-
-                ++$this->errors['previews'];
+            if ($this->console) {
+                $this->console->success('['.$name.'] preview created');
             }
+        } catch (Exception $e) {
+            if ($this->console) {
+                $this->console->error('['.$name.'] '.$e->getMessage());
+            }
+
+            ++$this->errors['previews'];
         }
     }
 
@@ -245,26 +243,24 @@ class Processor
      */
     private function generateThumbnail(string $name, bool $isGif): void
     {
-        if (!file_exists($this->thumbnailStorage($name, $isGif))) {
-            try {
-                if ($isGif) {
-                    $this->openVideo($this->videoStorage($name))->gif(TimeCode::fromSeconds($this->start), new Dimension(350, 151), $this->seconds)
-                        ->save($this->thumbnailStorage($name, $isGif));
-                } else {
-                    $this->openVideo($this->videoStorage($name))->frame(TimeCode::fromSeconds($this->start))
-                        ->save($this->thumbnailStorage($name));
-                }
-
-                if ($this->console) {
-                    $this->console->success('['.$name.'] thumbnail created');
-                }
-            } catch (Exception $e) {
-                if ($this->console) {
-                    $this->console->error('['.$name.'] '.$e->getMessage());
-                }
-
-                ++$this->errors['thumbnails'];
+        try {
+            if ($isGif) {
+                $this->openVideo($this->videoStorage($name))->gif(TimeCode::fromSeconds($this->start), new Dimension(350, 151), $this->seconds)
+                    ->save($this->thumbnailStorage($name, $isGif));
+            } else {
+                $this->openVideo($this->videoStorage($name))->frame(TimeCode::fromSeconds($this->start))
+                    ->save($this->thumbnailStorage($name));
             }
+
+            if ($this->console) {
+                $this->console->success('['.$name.'] thumbnail created');
+            }
+        } catch (Exception $e) {
+            if ($this->console) {
+                $this->console->error('['.$name.'] '.$e->getMessage());
+            }
+
+            ++$this->errors['thumbnails'];
         }
     }
 
