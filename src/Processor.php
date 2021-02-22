@@ -12,22 +12,26 @@ use FFMpeg\Format\Video\{DefaultVideo, X264, WMV, WebM};
 /**
  * Class Processor
  */
-class Processor extends AbstractProcessor
+class Processor
 {
     /** @var FFMpeg $ffmpeg */
-    protected $ffmpeg;
+    protected FFMpeg $ffmpeg;
 
     /** @var int $kiloBitrate */
-    protected $kiloBitrate = 1000;
+    protected int $kiloBitrate = 1000;
 
     /** @var int $audioChannels */
-    protected $audioChannels = 2;
+    protected int $audioChannels = 2;
 
     /** @var int $audioKiloBitrate */
-    protected $audioKiloBitrate = 256;
+    protected int $audioKiloBitrate = 256;
+
+    protected int $start = 10;
+
+    protected int $seconds = 10;
 
     /** @var array $errors */
-    protected $errors = ['thumbnails' => 0, 'previews' => 0];
+    protected array $errors = ['thumbnails' => 0, 'previews' => 0];
 
     /** @var mixed $console */
     protected $console = false;
@@ -52,7 +56,7 @@ class Processor extends AbstractProcessor
     /**
      * generate gif/jpeg thumbnails for videos.
      *
-     * @param string $name
+     * @param null $name
      * @param bool $isGif
      * @return array
      */
@@ -129,6 +133,16 @@ class Processor extends AbstractProcessor
         return ['status' => 'success', 'errors' => null, 'output' => $filename];
     }
 
+    public function setStart(int $value): Processor {
+        $this->start = $value;
+        return $this;
+    }
+
+    public function setSeconds(int $value): Processor {
+        $this->seconds = $value;
+        return $this;
+    }
+
     /**
      * @param int $kiloBitrate
      * @return Processor
@@ -193,7 +207,7 @@ class Processor extends AbstractProcessor
         if(!file_exists($this->videoStorage($name, true))) {
             try {
                 $media = $this->openVideo($this->videoStorage($name));
-                $media->filters()->clip(TimeCode::fromSeconds(2), TimeCode::fromSeconds(10));
+                $media->filters()->clip(TimeCode::fromSeconds($this->start), TimeCode::fromSeconds($this->seconds));
                 $media->save($this->getNewFormat(), $this->videoStorage($name, true));
 
                 if ($this->console) {
@@ -213,18 +227,18 @@ class Processor extends AbstractProcessor
      * Generate a thumbnail
      *
      * @param string $name
-     * @param $isGif
+     * @param bool $isGif
      * @return void
      */
-    private function generateThumbnail(string $name, $isGif): void
+    private function generateThumbnail(string $name, bool $isGif): void
     {
         if (!file_exists($this->thumbnailStorage($name, $isGif))) {
             try {
                 if ($isGif) {
-                    $this->openVideo($this->videoStorage($name))->gif(TimeCode::fromSeconds(360), new Dimension(350, 151), 20)
+                    $this->openVideo($this->videoStorage($name))->gif(TimeCode::fromSeconds($this->start), new Dimension(350, 151), $this->seconds)
                         ->save($this->thumbnailStorage($name, $isGif));
                 } else {
-                    $this->openVideo($this->videoStorage($name))->frame(TimeCode::fromSeconds(10))
+                    $this->openVideo($this->videoStorage($name))->frame(TimeCode::fromSeconds($this->start))
                         ->save($this->thumbnailStorage($name));
                 }
 

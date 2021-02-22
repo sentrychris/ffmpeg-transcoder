@@ -12,7 +12,11 @@ class TranscodeVideoCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'rowles:transcode-video {name} {--ext= : The selected format}';
+    protected $signature = 'transcode-video {name}
+        {--format= : The selected format}
+        {--bitrate= : Kilo bitrate (default: 1000)}
+        {--audio-bitrate= : Audio bitrate (default: 256)}
+        {--audio-channels= : Audio channels (default: 2)}';
 
     /**
      * The console command description.
@@ -39,7 +43,27 @@ class TranscodeVideoCommand extends Command
     public function handle(): void
     {
         $processor = new Processor($this->output);
-        $process = $processor->transcode($this->argument('name'), $this->option('ext'));
+
+        if ($this->option('bitrate')) {
+            $processor->setKiloBitrate($this->option('bitrate'));
+        }
+
+        if ($this->option('audio-bitrate')) {
+            $processor->setAudioKiloBitrate($this->option('audio-bitrate'));
+        }
+
+        if ($this->option('audio-channels')) {
+            $processor->setAudioChannels($this->option('audio-channels'));
+        }
+
+        if ($this->option('bitrate')) {
+            $processor->setKiloBitrate($this->option('bitrate'));
+        }
+
+        $process = $processor->transcode(
+            $this->argument('name'),
+            $this->option('ext')
+        );
 
         if ($process['status'] === 'error') {
             $this->output->writeln('<fg=red>[error]</> ' . $process['errors']);
