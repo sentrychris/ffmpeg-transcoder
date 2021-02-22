@@ -3,6 +3,7 @@
 namespace Rowles\Console\Commands;
 
 use Rowles\Processor;
+use Rowles\Console\Formatter;
 use Illuminate\Console\Command;
 
 class GeneratePreviewCommand extends Command
@@ -41,6 +42,7 @@ class GeneratePreviewCommand extends Command
     public function handle(): void
     {
         $processor = new Processor($this->output);
+        $console = new Formatter($this->output);
 
         if ($this->option('start')) {
             $processor->setStart($this->option('start'));
@@ -53,17 +55,13 @@ class GeneratePreviewCommand extends Command
         $process = $processor->preview($this->argument('name'));
 
         if ($process['status'] === 'error') {
-
-            if ($process['errors'] === 'not-found') {
-                $this->output->writeln('<fg=red>[error]</> video ID '.$this->argument('id').' not found.');
-            } else if ($process['errors']['previews'] > 0) {
-                $this->output->writeln('<comment>[error]</comment> failed to generate ' . $process['errors']['previews'] . ' previews');
+            if ($process['errors']['previews'] > 0) {
+                $console->error('failed to generate preview.');
             } else {
-                $this->output->writeln('<fg=red>[error]</> unspecified error.');
+                $console->error('unspecified error.');
             }
-
         } else {
-            $this->output->writeln('<info>[success]</info> all videos processed');
+            $console->success('preview successfully generated.');
         }
     }
 }

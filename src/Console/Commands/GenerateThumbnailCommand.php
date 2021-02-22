@@ -3,6 +3,7 @@
 namespace Rowles\Console\Commands;
 
 use Rowles\Processor;
+use Rowles\Console\Formatter;
 use Illuminate\Console\Command;
 
 class GenerateThumbnailCommand extends Command
@@ -42,6 +43,7 @@ class GenerateThumbnailCommand extends Command
     public function handle(): void
     {
         $processor = new Processor($this->output);
+        $console = new Formatter($this->output);
 
         if ($this->option('start')) {
             $processor->setStart($this->option('start'));
@@ -54,16 +56,13 @@ class GenerateThumbnailCommand extends Command
         $process = $processor->thumbnail($this->argument('name'), $this->option('preview'));
 
         if ($process['status'] === 'error') {
-            if ($process['errors'] === 'not-found') {
-                $this->output->writeln('<fg=red>[error]</> video ID '.$this->argument('id').' not found.');
-            } else if ($process['errors']['thumbnails'] > 0) {
-                $this->output->writeln('<comment>[warning]</comment> failed to generate '.$process['errors']['thumbnails'].' thumbnails');
+            if ($process['errors']['thumbnails'] > 0) {
+                $console->error('failed to generate thumbnail.');
             } else {
-                $this->output->writeln('<fg=red>[error]</> unspecified error');
+                $console->error('unspecified error.');
             }
-
         } else {
-            $this->output->writeln('<info>[success]</info> all videos processed');
+            $console->success('thumbnail successfully generated.');
         }
     }
 }

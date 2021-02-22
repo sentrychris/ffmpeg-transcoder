@@ -5,6 +5,7 @@ namespace Rowles;
 use Exception;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
+use Rowles\Console\Formatter;
 use FFMpeg\Coordinate\{TimeCode, Dimension};
 use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Format\Video\{DefaultVideo, X264, WMV, WebM};
@@ -50,7 +51,9 @@ class Processor
             'timeout' => $_ENV['FFMPEG_TIMEOUT'],
         ]);
 
-        $this->console = $console;
+        if ($console) {
+            $this->console = new Formatter($console);
+        }
     }
 
     /**
@@ -106,10 +109,10 @@ class Processor
             $format = $this->getNewFormat($ext);
 
             if ($this->console) {
-                $this->console->writeln('<fg=blue>[info]</> transcoding '.$name.' to '.$ext);
+                $this->console->info('transcoding '.$name.' to '.$ext);
                 $format->on('progress', function ($video, $format, $percentage) {
                     if ($video && $format) {
-                        $this->console->writeln('[progress] '.$percentage.'% complete');
+                        $this->console->info($percentage.'% complete');
                     }
                 });
             }
@@ -211,11 +214,11 @@ class Processor
                 $media->save($this->getNewFormat(), $this->videoStorage($name, true));
 
                 if ($this->console) {
-                    $this->console->writeln('<info>[success]</info> [video '.$name.'] previews created');
+                    $this->console->success('['.$name.'] preview created');
                 }
             } catch (Exception $e) {
                 if ($this->console) {
-                    $this->console->writeln('<fg=red>[error]</> [video '.$name.'] '.$e->getMessage());
+                    $this->console->error('['.$name.'] '.$e->getMessage());
                 }
 
                 ++$this->errors['previews'];
@@ -243,11 +246,11 @@ class Processor
                 }
 
                 if ($this->console) {
-                    $this->console->writeln('<info>[success]</info> [video '.$name.'] thumbnail created');
+                    $this->console->success('['.$name.'] thumbnail created');
                 }
             } catch (Exception $e) {
                 if ($this->console) {
-                    $this->console->writeln('<fg=red>[error]</> [video '.$name.'] '.$e->getMessage());
+                    $this->console->error('['.$name.'] '.$e->getMessage());
                 }
 
                 ++$this->errors['thumbnails'];

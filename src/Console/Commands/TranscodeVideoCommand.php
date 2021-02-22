@@ -3,6 +3,7 @@
 namespace Rowles\Console\Commands;
 
 use Rowles\Processor;
+use Rowles\Console\Formatter;
 use Illuminate\Console\Command;
 
 class TranscodeVideoCommand extends Command
@@ -10,7 +11,7 @@ class TranscodeVideoCommand extends Command
     /**
      * The name and signature of the console command.
      *
-     * @var string
+     * @var mixed
      */
     protected $signature = 'transcode-video {name}
         {--format= : The selected format}
@@ -21,7 +22,7 @@ class TranscodeVideoCommand extends Command
     /**
      * The console command description.
      *
-     * @var string
+     * @var mixed
      */
     protected $description = 'This command transcodes videos to the selected format.';
 
@@ -43,6 +44,7 @@ class TranscodeVideoCommand extends Command
     public function handle(): void
     {
         $processor = new Processor($this->output);
+        $console = new Formatter($this->output);
 
         if ($this->option('bitrate')) {
             $processor->setKiloBitrate($this->option('bitrate'));
@@ -60,16 +62,12 @@ class TranscodeVideoCommand extends Command
             $processor->setKiloBitrate($this->option('bitrate'));
         }
 
-        $process = $processor->transcode(
-            $this->argument('name'),
-            $this->option('ext')
-        );
+        $process = $processor->transcode($this->argument('name'), $this->option('ext'));
 
         if ($process['status'] === 'error') {
-            $this->output->writeln('<fg=red>[error]</> ' . $process['errors']);
+            $console->error($process['errors']);
         } else {
-            $this->output->writeln('<info>[success]</info> new video stored at ' . $process['output']);
-            $this->output->writeln('<fg=blue>[info]</> file path updated');
+            $console->success('new format stored at '.$process['output']);
         }
     }
 }
