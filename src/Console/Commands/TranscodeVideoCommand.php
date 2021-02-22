@@ -17,7 +17,8 @@ class TranscodeVideoCommand extends Command
         {--format= : The selected format}
         {--bitrate= : Kilo bitrate (default: 1000)}
         {--audio-bitrate= : Audio bitrate (default: 256)}
-        {--audio-channels= : Audio channels (default: 2)}';
+        {--audio-channels= : Audio channels (default: 2)};
+        {--constant-rate-factor= : Constant rate factor (default: 20)}';
 
     /**
      * The console command description.
@@ -58,11 +59,11 @@ class TranscodeVideoCommand extends Command
             $processor->setAudioChannels($this->option('audio-channels'));
         }
 
-        if ($this->option('bitrate')) {
-            $processor->setKiloBitrate($this->option('bitrate'));
+        if ($this->option('constant-rate-factor')) {
+            $processor->setConstantRateFactor($this->option('constant-rate-factor'));
         }
 
-        $process = $processor->transcode($this->argument('name'), $this->option('ext'));
+        $process = $processor->transcode($this->argument('name'), $this->option('format'));
 
         if ($process['status'] === 'error') {
             $console->error($process['errors']);

@@ -27,8 +27,13 @@ class Processor
     /** @var int $audioKiloBitrate */
     protected int $audioKiloBitrate = 256;
 
+    /** @var int $constantRateFactor */
+    protected int $constantRateFactor = 20;
+
+    /** @var int $start */
     protected int $start = 10;
 
+    /** @var int $seconds */
     protected int $seconds = 10;
 
     /** @var array $errors */
@@ -38,8 +43,6 @@ class Processor
     protected $console = false;
 
     /**
-     * Processor constructor.
-     *
      * @param mixed $console
      */
     public function __construct($console = false)
@@ -57,8 +60,6 @@ class Processor
     }
 
     /**
-     * generate gif/jpeg thumbnails for videos.
-     *
      * @param null $name
      * @param bool $isGif
      * @return array
@@ -77,8 +78,6 @@ class Processor
     }
 
     /**
-     * Generate 10-second preview video clips.
-     *
      * @param string $name
      * @return array
      */
@@ -96,8 +95,6 @@ class Processor
     }
 
     /**
-     * Transcode videos to the selected format
-     *
      * @param string $name
      * @param string $ext
      * @return array
@@ -105,7 +102,7 @@ class Processor
     public function transcode(string $name, string $ext = 'mp4'): array
     {
         try {
-            $media = $this->openVideo($name);
+            $media = $this->openVideo($this->videoStorage($name));
             $format = $this->getNewFormat($ext);
 
             if ($this->console) {
@@ -120,7 +117,8 @@ class Processor
             $format->setKiloBitrate($this->kiloBitrate)
                 ->setAudioChannels($this->audioChannels)
                 ->setAudioKiloBitrate($this->audioKiloBitrate);
-            $format->setAdditionalParameters( [ '-crf', '20' ] );
+
+            $format->setAdditionalParameters( [ '-crf', $this->constantRateFactor ] );
             $filename = $this->videoStorage($name).'.'.$ext;
 
             try {
@@ -136,11 +134,19 @@ class Processor
         return ['status' => 'success', 'errors' => null, 'output' => $filename];
     }
 
+    /**
+     * @param int $value
+     * @return $this
+     */
     public function setStart(int $value): Processor {
         $this->start = $value;
         return $this;
     }
 
+    /**
+     * @param int $value
+     * @return $this
+     */
     public function setSeconds(int $value): Processor {
         $this->seconds = $value;
         return $this;
@@ -177,8 +183,16 @@ class Processor
     }
 
     /**
-     * Fetch transcoding format
-     *
+     * @param int $constantRateFactor
+     * @return Processor
+     */
+    public function setConstantRateFactor(int $constantRateFactor): Processor
+    {
+        $this->constantRateFactor = $constantRateFactor;
+        return $this;
+    }
+
+    /**
      * @param string $ext
      * @return WebM|WMV|X264
      */
@@ -200,8 +214,6 @@ class Processor
     }
 
     /**
-     * Generate a previews
-     *
      * @param string $name
      * @return void
      */
@@ -227,8 +239,6 @@ class Processor
     }
 
     /**
-     * Generate a thumbnail
-     *
      * @param string $name
      * @param bool $isGif
      * @return void
@@ -287,8 +297,6 @@ class Processor
     }
 
     /**
-     * Get path to video storage
-     *
      * @param string $name
      * @param bool $isPreview
      * @return string
