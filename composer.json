@@ -3,11 +3,13 @@
   "type": "library",
   "description": "",
   "require": {
+    "php": "^7.4",
     "illuminate/console": "^5.4",
     "illuminate/container": "^5.4",
     "illuminate/events": "^5.4",
     "php-ffmpeg/php-ffmpeg": "^0.17.0",
-    "vlucas/phpdotenv": "^5.3"
+    "vlucas/phpdotenv": "^5.3",
+    "aws/aws-sdk-php": "^3.173"
   },
   "autoload": {
     "psr-4": {"Rowles\\": "src/"}
