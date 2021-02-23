@@ -2,12 +2,16 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Console\Formatter;
+use Rowles\Console\OutputFormatter;
 use Illuminate\Console\Command;
+use Rowles\Console\OutputHandler;
 use Rowles\Console\Processors\ThumbnailProcessor;
 
 class GenerateThumbnailCommand extends Command
 {
+    /** @var string  */
+    protected string $identifier = 'thumbnails';
+
     /**
      * The name and signature of the console command.
      *
@@ -43,7 +47,6 @@ class GenerateThumbnailCommand extends Command
      */
     public function handle(): void
     {
-        $console = new Formatter($this->output);
         $processor = new ThumbnailProcessor($this->output);
 
         if ($this->option('start')) {
@@ -60,14 +63,6 @@ class GenerateThumbnailCommand extends Command
             $this->option('bulk-mode')
         );
 
-        if ($process['status'] === 'error') {
-            if ($process['errors']['thumbnails'] > 0) {
-                $console->error('failed to generate ' . $process['errors']['thumbnails'] . ' thumbnails.');
-            } else {
-                $console->error('unspecified error.');
-            }
-        } else {
-            $console->success('thumbnail successfully generated.');
-        }
+        OutputHandler::handle($process, $this->output, $this->identifier);
     }
 }

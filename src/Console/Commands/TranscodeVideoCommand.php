@@ -2,7 +2,7 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Console\Formatter;
+use Rowles\Console\OutputFormatter;
 use Illuminate\Console\Command;
 use Rowles\Console\Processors\TranscodeProcessor;
 
@@ -44,7 +44,7 @@ class TranscodeVideoCommand extends Command
      */
     public function handle(): void
     {
-        $console = new Formatter($this->output);
+        $console = new OutputFormatter($this->output);
         $processor = new TranscodeProcessor($this->output);
 
         if ($this->option('bitrate')) {

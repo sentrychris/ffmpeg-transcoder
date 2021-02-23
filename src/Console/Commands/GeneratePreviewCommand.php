@@ -2,12 +2,16 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Console\Formatter;
+use Rowles\Console\OutputFormatter;
 use Illuminate\Console\Command;
+use Rowles\Console\OutputHandler;
 use Rowles\Console\Processors\PreviewProcessor;
 
 class GeneratePreviewCommand extends Command
 {
+    /** @var string  */
+    protected string $identifier = 'previews';
+
     /**
      * The name and signature of the console command.
      *
@@ -42,7 +46,7 @@ class GeneratePreviewCommand extends Command
      */
     public function handle(): void
     {
-        $console = new Formatter($this->output);
+        $console = new OutputFormatter($this->output);
         $processor = new PreviewProcessor($this->output);
 
         if ($this->option('start')) {
@@ -58,14 +62,6 @@ class GeneratePreviewCommand extends Command
             $this->option('bulk-mode')
         );
 
-        if ($process['status'] === 'error') {
-            if ($process['errors']['previews'] > 0) {
-                $console->error('failed to generate '. $process['errors']['previews'] .' preview.');
-            } else {
-                $console->error('unspecified error.');
-            }
-        } else {
-            $console->success('preview successfully generated.');
-        }
+        OutputHandler::handle($process, $this->output, $this->identifier);
     }
 }

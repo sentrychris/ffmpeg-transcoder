@@ -4,7 +4,7 @@ namespace Rowles\Console;
 
 use Illuminate\Console\OutputStyle;
 
-class Formatter
+class OutputFormatter
 {
     /** @var OutputStyle $output */
     protected OutputStyle $output;

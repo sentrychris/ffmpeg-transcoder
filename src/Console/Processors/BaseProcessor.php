@@ -4,11 +4,11 @@ namespace Rowles\Console\Processors;
 
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
-use Rowles\Console\Formatter;
+use Rowles\Console\OutputFormatter;
 use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Format\Video\{DefaultVideo, X264, WMV, WebM};
 
-class BaseProcessor
+abstract class BaseProcessor
 {
     /** @var FFMpeg $ffmpeg */
     protected FFMpeg $ffmpeg;
@@ -35,7 +35,7 @@ class BaseProcessor
         ]);
 
         if ($console) {
-            $this->console = new Formatter($console);
+            $this->console = new OutputFormatter($console);
         }
     }
 
