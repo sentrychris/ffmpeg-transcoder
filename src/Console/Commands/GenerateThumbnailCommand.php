@@ -2,9 +2,9 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Processor;
 use Rowles\Console\Formatter;
 use Illuminate\Console\Command;
+use Rowles\Console\Processors\ThumbnailProcessor;
 
 class GenerateThumbnailCommand extends Command
 {
@@ -13,10 +13,11 @@ class GenerateThumbnailCommand extends Command
      *
      * @var mixed
      */
-    protected $signature = 'generate-thumbnail {name}
-        {--preview : render previews in gif format}
-        {--start= : Starting point for preview (default: 10)}
-        {--seconds= : Number of seconds to capture for preview (default: 10)}';
+    protected $signature = 'generate-thumbnail {name?}
+        {--preview : render thumbnail(s) in gif format}
+        {--bulk-mode : Generate thumbnails in bulk mode}
+        {--start= : Starting point for thumbnail(s) (default: 10)}
+        {--seconds= : Number of seconds to capture for gif thumbnail(s) (default: 10)}';
 
     /**
      * The console command description.
@@ -42,8 +43,8 @@ class GenerateThumbnailCommand extends Command
      */
     public function handle(): void
     {
-        $processor = new Processor($this->output);
         $console = new Formatter($this->output);
+        $processor = new ThumbnailProcessor($this->output);
 
         if ($this->option('start')) {
             $processor->setStart($this->option('start'));
@@ -53,11 +54,15 @@ class GenerateThumbnailCommand extends Command
             $processor->setSeconds($this->option('seconds'));
         }
 
-        $process = $processor->thumbnail($this->argument('name'), $this->option('preview'));
+        $process = $processor->thumbnail(
+            $this->argument('name'),
+            $this->option('preview'),
+            $this->option('bulk-mode')
+        );
 
         if ($process['status'] === 'error') {
             if ($process['errors']['thumbnails'] > 0) {
-                $console->error('failed to generate thumbnail.');
+                $console->error('failed to generate ' . $process['errors']['thumbnails'] . ' thumbnails.');
             } else {
                 $console->error('unspecified error.');
             }

@@ -2,9 +2,9 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Processor;
 use Rowles\Console\Formatter;
 use Illuminate\Console\Command;
+use Rowles\Console\Processors\TranscodeProcessor;
 
 class TranscodeVideoCommand extends Command
 {
@@ -44,8 +44,8 @@ class TranscodeVideoCommand extends Command
      */
     public function handle(): void
     {
-        $processor = new Processor($this->output);
         $console = new Formatter($this->output);
+        $processor = new TranscodeProcessor($this->output);
 
         if ($this->option('bitrate')) {
             $processor->setKiloBitrate($this->option('bitrate'));

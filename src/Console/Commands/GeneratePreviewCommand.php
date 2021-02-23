@@ -2,9 +2,9 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Processor;
 use Rowles\Console\Formatter;
 use Illuminate\Console\Command;
+use Rowles\Console\Processors\PreviewProcessor;
 
 class GeneratePreviewCommand extends Command
 {
@@ -13,7 +13,8 @@ class GeneratePreviewCommand extends Command
      *
      * @var mixed
      */
-    protected $signature = 'generate-preview {name}
+    protected $signature = 'generate-preview {name?}
+        {--bulk-mode : Generate previews in bulk mode}
         {--start= : Starting point for preview (default: 10)}
         {--seconds= : Number of seconds to capture for preview (default: 10)}';
 
@@ -41,8 +42,8 @@ class GeneratePreviewCommand extends Command
      */
     public function handle(): void
     {
-        $processor = new Processor($this->output);
         $console = new Formatter($this->output);
+        $processor = new PreviewProcessor($this->output);
 
         if ($this->option('start')) {
             $processor->setStart($this->option('start'));
@@ -52,11 +53,14 @@ class GeneratePreviewCommand extends Command
             $processor->setSeconds($this->option('seconds'));
         }
 
-        $process = $processor->preview($this->argument('name'));
+        $process = $processor->preview(
+            $this->argument('name'),
+            $this->option('bulk-mode')
+        );
 
         if ($process['status'] === 'error') {
             if ($process['errors']['previews'] > 0) {
-                $console->error('failed to generate preview.');
+                $console->error('failed to generate '. $process['errors']['previews'] .' preview.');
             } else {
                 $console->error('unspecified error.');
             }
