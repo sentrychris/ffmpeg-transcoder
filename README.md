@@ -2,11 +2,27 @@
 
 A Small console package to help transcode videos and generate thumbnails/previews.
 
+## Installation
+
+1. Clone the repository.
+  ```sh
+  git clone git@github.com:chrisrowles/ffmpeg-transcoder
+  cd ffmpeg-transcoder
+  ```
+3. Install the dependencies with composer
+  ```sh
+  composer install
+  ```
+4. Copy .env.example to .env and enter your env variable values.
+  ```sh
+  cp .env.example .env
+  ```
+
 ## Commands
 
 Available commands:
 
-```sh
+```
   generate-preview    This command generates 10-second previews for videos.
   generate-thumbnail  This command generates thumbnails for videos.
   help                Displays help for a command
@@ -15,7 +31,7 @@ Available commands:
 ```
 
 ### Transcoding
-```sh
+```
 Description:
   This command transcodes videos to the selected format.
 
@@ -36,7 +52,7 @@ Options:
 
 ### Thumbnails
 
-```sh
+```
 Description:
   This command generates thumbnails for videos.
 
@@ -54,7 +70,7 @@ Options:
 ```
 
 ### Previews
-```sh
+```
 Description:
   This command generates previews for videos.
 
