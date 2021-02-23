@@ -14,7 +14,7 @@ class GenerateThumbnailCommand extends Command
      * @var mixed
      */
     protected $signature = 'generate-thumbnail {name?}
-        {--preview : render thumbnail(s) in gif format}
+        {--gif : render thumbnail(s) in gif format}
         {--bulk-mode : Generate thumbnails in bulk mode}
         {--start= : Starting point for thumbnail(s) (default: 10)}
         {--seconds= : Number of seconds to capture for gif thumbnail(s) (default: 10)}';
@@ -56,7 +56,7 @@ class GenerateThumbnailCommand extends Command
 
         $process = $processor->thumbnail(
             $this->argument('name'),
-            $this->option('preview'),
+            $this->option('gif'),
             $this->option('bulk-mode')
         );
 

@@ -71,34 +71,88 @@ class BaseProcessor
 
     /**
      * @param string $name
-     * @param bool $isPreview
+     * @param bool $isGif
      * @return string
      */
-    protected function thumbnailStorage(string $name, bool $isPreview = false): string
+    protected function thumbnailStorageSource(string $name = "", bool $isGif = false): string
     {
         if (is_file($name)) {
             return $name;
         }
 
-        $folder = $isPreview ? 'previews' : 'static';
+        $folder = $isGif ? 'gifs' : 'jpegs';
+        $directory = $_ENV['IMAGE_STORAGE_SOURCE'] . '/' . $folder;
 
-        return __DIR__ . '/../../../' . $_ENV['IMAGE_STORAGE'] . '/' . $folder . '/' . $name;
+        return $directory . '/' . $name;
     }
 
     /**
      * @param string $name
-     * @param bool $isPreview
+     * @param bool $isGif
      * @return string
      */
-    protected function videoStorage(string $name, bool $isPreview = false): string
+    protected function thumbnailStorageDestination(string $name, bool $isGif = false): string
     {
         if (is_file($name)) {
             return $name;
         }
 
-        $folder = ($isPreview === false) ? 'videos' : 'previews';
+        $folder = $isGif ? 'gifs' : 'jpegs';
+        $directory = $_ENV['IMAGE_STORAGE_DESTINATION'] . '/' . $folder;
 
-        return $_ENV['VIDEO_STORAGE'] . '/' . $folder . '/' . $name;
+        return $directory . '/' . $name;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function previewStorageSource(string $name = ""): string
+    {
+        if (is_file($name)) {
+            return $name;
+        }
+
+        return $_ENV['PREVIEW_STORAGE_SOURCE'] . '/' . $name;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function previewStorageDestination(string $name): string
+    {
+        if (is_file($name)) {
+            return $name;
+        }
+
+        return $_ENV['PREVIEW_STORAGE_DESTINATION'] . '/' . $name;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function videoStorageSource(string $name = ""): string
+    {
+        if (is_file($name)) {
+            return $name;
+        }
+
+        return $_ENV['VIDEO_STORAGE_SOURCE'] . '/' . $name;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function videoStorageDestination(string $name): string
+    {
+        if (is_file($name)) {
+            return $name;
+        }
+
+        return $_ENV['VIDEO_STORAGE_DESTINATION'] . '/' . $name;
     }
 
     /**

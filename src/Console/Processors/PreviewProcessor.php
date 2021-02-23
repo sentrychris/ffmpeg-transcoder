@@ -27,12 +27,12 @@ class PreviewProcessor extends BaseProcessor
     public function preview($name = null, bool $bulkMode = false): array
     {
         if (is_null($name) && $bulkMode) {
-            $files = array_slice(scandir($this->videoStorage("")), 2);
+            $files = array_slice(scandir($this->videoStorageSource()), 2);
             foreach ($files as $file) {
                 $this->ffmpegPreview($file);
             }
         } else {
-            if (!file_exists($this->videoStorage($name, true))) {
+            if (!file_exists($this->previewStorageDestination($name))) {
                 $this->ffmpegPreview($name);
             }
         }
@@ -51,9 +51,9 @@ class PreviewProcessor extends BaseProcessor
     private function ffmpegPreview(string $name): void
     {
         try {
-            $media = $this->openVideo($this->videoStorage($name));
+            $media = $this->openVideo($this->videoStorageSource($name));
             $media->filters()->clip(TimeCode::fromSeconds($this->start), TimeCode::fromSeconds($this->seconds));
-            $media->save($this->getNewFormat(), $this->thumbnailStorage($name, true));
+            $media->save($this->getNewFormat(), $this->previewStorageDestination($name));
 
             if ($this->console) {
                 $this->console->success('[' . $name . '] preview created');

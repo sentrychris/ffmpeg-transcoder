@@ -35,7 +35,7 @@ class TranscodeProcessor extends BaseProcessor
     public function transcode(string $name, string $ext = 'mp4'): array
     {
         try {
-            $media = $this->openVideo($this->videoStorage($name));
+            $media = $this->openVideo($this->videoStorageSource($name));
             $format = $this->getNewFormat($ext);
 
             if ($this->console) {
@@ -52,7 +52,7 @@ class TranscodeProcessor extends BaseProcessor
                 ->setAudioKiloBitrate($this->audioKiloBitrate);
 
             $format->setAdditionalParameters(['-crf', $this->constantRateFactor]);
-            $filename = $this->videoStorage($name) . '.' . $ext;
+            $filename = $this->videoStorageDestination($name) . '.' . $ext;
 
             try {
                 $media->save($format, $filename);

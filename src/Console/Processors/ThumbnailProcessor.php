@@ -28,12 +28,12 @@ class ThumbnailProcessor extends BaseProcessor
     public function thumbnail($name = null, bool $isGif = false, bool $bulkMode = false): array
     {
         if (is_null($name) && $bulkMode) {
-            $files = array_slice(scandir($this->videoStorage("")), 2);
+            $files = array_slice(scandir($this->videoStorageSource()), 2);
             foreach ($files as $file) {
                 $this->ffmpegThumbnail($file, $isGif);
             }
         } else {
-            if (!file_exists($this->thumbnailStorage($name, $isGif))) {
+            if (!file_exists($this->thumbnailStorageSource($name, $isGif))) {
                 $this->ffmpegThumbnail($name, $isGif);
             }
         }
@@ -53,11 +53,11 @@ class ThumbnailProcessor extends BaseProcessor
     {
         try {
             if ($isGif) {
-                $this->openVideo($this->videoStorage($name))->gif(TimeCode::fromSeconds($this->start), new Dimension(350, 151), $this->seconds)
-                    ->save($this->thumbnailStorage($name.'.gif', $isGif));
+                $this->openVideo($this->videoStorageSource($name))->gif(TimeCode::fromSeconds($this->start), new Dimension(350, 151), $this->seconds)
+                    ->save($this->thumbnailStorageDestination($name.'.gif', $isGif));
             } else {
-                $this->openVideo($this->videoStorage($name))->frame(TimeCode::fromSeconds($this->start))
-                    ->save($this->thumbnailStorage($name.'.jpg'));
+                $this->openVideo($this->videoStorageSource($name))->frame(TimeCode::fromSeconds($this->start))
+                    ->save($this->thumbnailStorageDestination($name.'.jpg'));
             }
 
             if ($this->console) {
