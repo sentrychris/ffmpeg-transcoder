@@ -33,7 +33,7 @@ class ThumbnailProcessor extends BaseProcessor
                 $this->ffmpegThumbnail($file, $isGif);
             }
         } else {
-            if (!file_exists($this->thumbnailStorageSource($name, $isGif))) {
+            if (!file_exists($this->thumbnailStorageDestination($name, $isGif))) {
                 $this->ffmpegThumbnail($name, $isGif);
             }
         }
