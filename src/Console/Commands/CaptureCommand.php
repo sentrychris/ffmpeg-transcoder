@@ -5,7 +5,7 @@ namespace Rowles\Console\Commands;
 use Rowles\Console\OutputFormatter;
 use Illuminate\Console\Command;
 use Rowles\Console\OutputHandler;
-use Rowles\Console\Processors\ThumbnailProcessor;
+use Rowles\Console\Processors\CaptureProcessor;
 
 class GenerateThumbnailCommand extends Command
 {
@@ -47,7 +47,7 @@ class GenerateThumbnailCommand extends Command
      */
     public function handle(): void
     {
-        $processor = new ThumbnailProcessor($this->output);
+        $processor = new CaptureProcessor($this->output);
 
         if ($this->option('start')) {
             $processor->setStart($this->option('start'));
@@ -57,7 +57,7 @@ class GenerateThumbnailCommand extends Command
             $processor->setSeconds($this->option('seconds'));
         }
 
-        $process = $processor->thumbnail(
+        $process = $processor->run(
             $this->argument('name'),
             $this->option('gif'),
             $this->option('bulk-mode')
