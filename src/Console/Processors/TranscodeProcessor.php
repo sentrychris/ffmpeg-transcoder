@@ -38,14 +38,17 @@ class TranscodeProcessor extends BaseProcessor
             $media = $this->openVideo($this->videoStorageSource($name));
             $format = $this->getNewFormat($ext);
 
-            if ($this->console) {
-                $this->console->info('transcoding ' . $name . ' to ' . $ext);
-                $format->on('progress', function ($video, $format, $percentage) {
-                    if ($video && $format) {
-                        $this->console->info($percentage . '% complete');
-                    }
-                });
-            }
+            $this->console->info('transcoding ' . $name . ' to ' . $ext);
+            $info = $media->getFormat();
+
+            $this->console->output->createProgressBar();
+            $this->console->output->progressStart();
+            $format->on('progress', function ($video, $format, $percentage) {
+                if ($video && $format) {
+                    $this->console->output->writeln($percentage);
+                    $this->console->output->progressAdvance($percentage);
+                }
+            });
 
             $format->setKiloBitrate($this->kiloBitrate)
                 ->setAudioChannels($this->audioChannels)
@@ -54,12 +57,8 @@ class TranscodeProcessor extends BaseProcessor
             $format->setAdditionalParameters(['-crf', $this->constantRateFactor]);
             $filename = $this->videoStorageDestination($name) . '.' . $ext;
 
-            try {
-                $media->save($format, $filename);
-            } catch (Exception $e) {
-                return ['status' => 'error', 'errors' => $e->getMessage()];
-            }
-
+            $media->save($format, $filename);
+            $this->console->output->progressFinish();
         } catch (Exception $e) {
             return ['status' => 'error', 'errors' => $e->getMessage()];
         }
@@ -105,5 +104,18 @@ class TranscodeProcessor extends BaseProcessor
     {
         $this->constantRateFactor = $constantRateFactor;
         return $this;
+    }
+
+    private function formatBytes($bytes)
+    {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= (1 << (10 * $pow));
+
+        return round($bytes, 2);
     }
 }

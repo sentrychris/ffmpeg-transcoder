@@ -7,7 +7,7 @@ use Illuminate\Console\OutputStyle;
 class OutputFormatter
 {
     /** @var OutputStyle $output */
-    protected OutputStyle $output;
+    public OutputStyle $output;
 
     public function __construct(OutputStyle $output)
     {
