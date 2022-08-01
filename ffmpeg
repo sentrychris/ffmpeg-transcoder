@@ -7,7 +7,7 @@ use Illuminate\Container\Container;
 
 use Rowles\Console\Commands\CaptureCommand;
 use Rowles\Console\Commands\ClipCommand;
-use Rowles\Console\Commands\TranscodeVideoCommand;
+use Rowles\Console\Commands\TranscodeCommand;
 
 require_once __DIR__.'/vendor/autoload.php';
 
@@ -24,6 +24,6 @@ $app->setName('PHP FFmpeg');
 
 $app->add(new CaptureCommand);
 $app->add(new ClipCommand);
-$app->add(new TranscodeVideoCommand);
+$app->add(new TranscodeCommand);
 
 $app->run();

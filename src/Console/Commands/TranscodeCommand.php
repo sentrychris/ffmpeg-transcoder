@@ -6,14 +6,14 @@ use Rowles\Console\OutputFormatter;
 use Illuminate\Console\Command;
 use Rowles\Console\Processors\TranscodeProcessor;
 
-class TranscodeVideoCommand extends Command
+class TranscodeCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var mixed
      */
-    protected $signature = 'transcode-video {name}
+    protected $signature = 'transcode {name}
         {--format= : The selected format}
         {--bitrate= : Kilo bitrate (default: 1000)}
         {--audio-bitrate= : Audio bitrate (default: 256)}
@@ -63,7 +63,10 @@ class TranscodeVideoCommand extends Command
             $processor->setConstantRateFactor($this->option('constant-rate-factor'));
         }
 
-        $process = $processor->transcode($this->argument('name'), $this->option('format'));
+        $process = $processor->run(
+            $this->argument('name'),
+            $this->option('format')
+        );
 
         if ($process['status'] === 'error') {
             $console->error($process['errors']);

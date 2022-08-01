@@ -32,7 +32,7 @@ class TranscodeProcessor extends BaseProcessor
      * @param string $ext
      * @return array
      */
-    public function transcode(string $name, string $ext = 'mp4'): array
+    public function run(string $name, string $ext = 'mp4'): array
     {
         try {
             $media = $this->openVideo($this->videoStorageSource($name));

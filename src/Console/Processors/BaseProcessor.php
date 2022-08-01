@@ -81,9 +81,9 @@ abstract class BaseProcessor
     /**
      * @param null|string $name
      * @param bool $isGif
-     * @return string
+     * @return false|string
      */
-    protected function captureStorageDestination(null|string $name, bool $isGif = false): string
+    protected function captureStorageDestination(null|string $name, bool $isGif = false): false|string
     {
         if (is_null($name)) {
             $this->console?->error('You must specify a filename.');
@@ -118,11 +118,15 @@ abstract class BaseProcessor
     }
 
     /**
-     * @param string $name
+     * @param mixed $name
      * @return string
      */
-    protected function videoStorageSource(string $name = ""): string
+    protected function videoStorageSource(mixed $name = ""): string
     {
+        if (is_null($name)) {
+            return false;
+        }
+
         if (is_file($name)) {
             return $name;
         }
@@ -144,23 +148,15 @@ abstract class BaseProcessor
     }
 
     /**
-     * @param string $ext
+     * @param null|string $ext
      * @return WebM|WMV|X264
      */
-    protected function getNewFormat($ext = null): DefaultVideo
+    protected function getNewFormat(null|string $ext = null): WebM|WMV|X264
     {
-        switch ($ext) {
-            case 'wmv':
-                $format = new WMV('wmav2', 'wmv2');
-                break;
-            case 'webm':
-                $format = new WebM('libvorbis', 'libvpx');
-                break;
-            default:
-                $format = new X264('aac', 'libx264');
-                break;
-        }
-
-        return $format;
+        return match ($ext) {
+            'wmv' => new WMV('wmav2', 'wmv2'),
+            'webm' => new WebM('libvorbis', 'libvpx'),
+            default => new X264('aac', 'libx264'),
+        };
     }
 }

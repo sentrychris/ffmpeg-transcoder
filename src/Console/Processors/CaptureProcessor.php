@@ -33,8 +33,7 @@ class CaptureProcessor extends BaseProcessor
                 $this->capture($file, $isGif);
             }
         } else {
-            $file = $this->captureStorageDestination($name, $isGif);
-            if ($file && !file_exists($file)) {
+            if (!file_exists($this->captureStorageDestination($name, $isGif))) {
                 $this->capture($name, $isGif);
             }
         }
@@ -47,10 +46,10 @@ class CaptureProcessor extends BaseProcessor
     }
 
     /**
-     * @param string $name
+     * @param null|string $name
      * @param bool $isGif
      */
-    private function capture(string $name, bool $isGif): void
+    private function capture(null|string $name, bool $isGif): void
     {
         try {
             if ($isGif) {
