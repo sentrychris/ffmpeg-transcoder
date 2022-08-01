@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+use Illuminate\Events\Dispatcher;
+use Illuminate\Console\Application;
+use Illuminate\Container\Container;
+
+use Rowles\Console\Commands\GenerateThumbnailCommand;
+use Rowles\Console\Commands\ClipCommand;
+use Rowles\Console\Commands\TranscodeVideoCommand;
+
+require_once __DIR__.'/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+$version = env('VERSION_CONSTRAINT');
+
+$container = new Container;
+$dispatcher = new Dispatcher;
+
+$app = new Application($container, $dispatcher, $version);
+$app->setName('PHP FFmpeg');
+
+$app->add(new GenerateThumbnailCommand);
+$app->add(new ClipCommand);
+$app->add(new TranscodeVideoCommand);
+
+$app->run();

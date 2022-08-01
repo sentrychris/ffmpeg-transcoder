@@ -4,6 +4,7 @@ namespace Rowles\Console\Processors;
 
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
+use Illuminate\Console\OutputStyle;
 use Rowles\Console\OutputFormatter;
 use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Format\Video\{DefaultVideo, X264, WMV, WebM};
@@ -13,19 +14,19 @@ abstract class BaseProcessor
     /** @var FFMpeg $ffmpeg */
     protected FFMpeg $ffmpeg;
 
-    /** @var int $start */
-    protected int $start = 10;
+    /** @var int $from */
+    protected int $from;
 
     /** @var int $seconds */
-    protected int $seconds = 10;
+    protected int $seconds;
 
-    /** @var mixed $console */
-    protected $console = false;
+    /** @var false|OutputFormatter $console */
+    protected false|OutputFormatter $console = false;
 
     /**
-     * @param mixed $console
+     * @param false|OutputStyle $output
      */
-    public function __construct($console = false)
+    public function __construct(false|OutputStyle $output = false)
     {
         $this->ffmpeg = FFMpeg::create([
             'ffprobe.binaries' => $_ENV['FFPROBE_BINARY'],
@@ -34,8 +35,8 @@ abstract class BaseProcessor
             'timeout' => $_ENV['FFMPEG_TIMEOUT'],
         ]);
 
-        if ($console) {
-            $this->console = new OutputFormatter($console);
+        if ($output) {
+            $this->console = new OutputFormatter($output);
         }
     }
 
@@ -43,9 +44,9 @@ abstract class BaseProcessor
      * @param int $value
      * @return $this
      */
-    public function setStart(int $value): self
+    public function setFrom(int $value): self
     {
-        $this->start = $value;
+        $this->from = $value;
         return $this;
     }
 
@@ -107,26 +108,13 @@ abstract class BaseProcessor
      * @param string $name
      * @return string
      */
-    protected function previewStorageSource(string $name = ""): string
+    protected function clipStorageDestination(string $name): string
     {
         if (is_file($name)) {
             return $name;
         }
 
-        return $_ENV['PREVIEW_STORAGE_SOURCE'] . '/' . $name;
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    protected function previewStorageDestination(string $name): string
-    {
-        if (is_file($name)) {
-            return $name;
-        }
-
-        return $_ENV['PREVIEW_STORAGE_DESTINATION'] . '/' . $name;
+        return $_ENV['CLIP_STORAGE_DESTINATION'] . '/' . $name;
     }
 
     /**
