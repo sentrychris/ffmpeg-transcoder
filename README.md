@@ -1,6 +1,6 @@
 # FFMPEG Transcoder
 
-A Small console package to help transcode videos and generate thumbnails/previews.
+A Small console package to help transcode videos and generate captures/clips.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Available commands:
 
 ```
   clip                This command clips videos.
-  generate-thumbnail  This command generates thumbnails for videos.
+  capture             This command captures screenshots or gifs from videos.
   help                Displays help for a command
   list                Lists commands
   transcode-video     This command transcodes videos to the selected format.
@@ -50,23 +50,23 @@ Options:
 ```
 
 
-### Thumbnails
+### Captures
 
 ```
 Description:
-  This command generates thumbnails for videos.
+  This command generates captures for videos.
 
 Usage:
-  generate-thumbnail [options] [--] [<name>]
+  capture [options] [--] [<name>]
 
 Arguments:
   name  Filename (leave blank for bulk processing)
 
 Options:
-      --gif                Render thumbnail(s) in gif format
-      --bulk-mode          Generate thumbnails in bulk mode
-      --start[=START]      Starting point for thumbnail(s) (default: 10)
-      --seconds[=SECONDS]  Number of seconds to capture for gif thumbnail(s) (default: 10)
+      --gif                Capture video in in gif format
+      --bulk               Capture from multiple videos
+      --from[=START]       Point of capture
+      --seconds[=SECONDS]  Number of seconds to capture if it is a gif
 ```
 
 ### Clips

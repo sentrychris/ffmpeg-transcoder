@@ -2,7 +2,6 @@
 
 namespace Rowles\Console\Commands;
 
-use Rowles\Console\OutputFormatter;
 use Illuminate\Console\Command;
 use Rowles\Console\OutputHandler;
 use Rowles\Console\Processors\ClipProcessor;
@@ -30,16 +29,6 @@ class ClipCommand extends Command
     protected $description = 'This command clips videos.';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return void
@@ -47,10 +36,13 @@ class ClipCommand extends Command
     public function handle(): void
     {
         $processor = new ClipProcessor($this->output);
-
         $processor->setFrom($this->option('from'));
         $processor->setSeconds($this->option('seconds'));
-        $process = $processor->run($this->argument('name'), $this->option('bulk'));
+
+        $process = $processor->run(
+            $this->argument('name'),
+            $this->option('bulk')
+        );
 
         OutputHandler::handle($process, $this->output, $this->identifier);
     }

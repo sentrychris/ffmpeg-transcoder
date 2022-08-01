@@ -5,13 +5,13 @@ namespace Rowles\Console\Processors;
 use Exception;
 use FFMpeg\Coordinate\{Dimension, TimeCode};
 
-class ThumbnailProcessor extends BaseProcessor
+class CaptureProcessor extends BaseProcessor
 {
     /** @var array $errors */
-    protected array $errors = ['thumbnails' => 0];
+    protected array $errors = ['captures' => 0];
 
     /**
-     * ThumbnailProcessor constructor.
+     * CaptureProcessor constructor.
      * @param bool $console
      */
     public function __construct($console = false)
@@ -20,25 +20,26 @@ class ThumbnailProcessor extends BaseProcessor
     }
 
     /**
-     * @param mixed $name
+     * @param null|string $name
      * @param bool $isGif
      * @param bool $bulkMode
      * @return array
      */
-    public function thumbnail($name = null, bool $isGif = false, bool $bulkMode = false): array
+    public function run(null|string $name = null, bool $isGif = false, bool $bulkMode = false): array
     {
-        if (is_null($name) && $bulkMode) {
+        if ($bulkMode && is_null($name)) {
             $files = array_slice(scandir($this->videoStorageSource()), 2);
             foreach ($files as $file) {
-                $this->ffmpegThumbnail($file, $isGif);
+                $this->capture($file, $isGif);
             }
         } else {
-            if (!file_exists($this->thumbnailStorageDestination($name, $isGif))) {
-                $this->ffmpegThumbnail($name, $isGif);
+            $file = $this->captureStorageDestination($name, $isGif);
+            if ($file && !file_exists($file)) {
+                $this->capture($name, $isGif);
             }
         }
 
-        if ($this->errors['thumbnails'] > 0) {
+        if ($this->errors['captures'] > 0) {
             return ['status' => 'error', 'errors' => $this->errors];
         }
 
@@ -49,26 +50,28 @@ class ThumbnailProcessor extends BaseProcessor
      * @param string $name
      * @param bool $isGif
      */
-    private function ffmpegThumbnail(string $name, bool $isGif): void
+    private function capture(string $name, bool $isGif): void
     {
         try {
             if ($isGif) {
-                $this->openVideo($this->videoStorageSource($name))->gif(TimeCode::fromSeconds($this->start), new Dimension(350, 151), $this->seconds)
-                    ->save($this->thumbnailStorageDestination($name.'.gif', $isGif));
+                $this->openVideo($this->videoStorageSource($name))
+                    ->gif(
+                        TimeCode::fromSeconds($this->from),
+                        new Dimension(350, 151),
+                        $this->seconds
+                    )
+                    ->save($this->captureStorageDestination($name.'.gif', true));
             } else {
-                $this->openVideo($this->videoStorageSource($name))->frame(TimeCode::fromSeconds($this->start))
-                    ->save($this->thumbnailStorageDestination($name.'.jpg'));
+                $this->openVideo($this->videoStorageSource($name))
+                    ->frame(TimeCode::fromSeconds($this->from))
+                    ->save($this->captureStorageDestination($name.'.jpg'));
             }
 
-            if ($this->console) {
-                $this->console->success('[' . $name . '] thumbnail created');
-            }
+            $this->console->success('[' . $name . '] capture created');
         } catch (Exception $e) {
-            if ($this->console) {
-                $this->console->error('[' . $name . '] ' . $e->getMessage());
-            }
+            $this->console->error('[' . $name . '] ' . $e->getMessage());
 
-            ++$this->errors['thumbnails'];
+            ++$this->errors['captures'];
         }
     }
 }

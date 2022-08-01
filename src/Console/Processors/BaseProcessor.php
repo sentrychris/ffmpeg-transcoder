@@ -41,23 +41,31 @@ abstract class BaseProcessor
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @param int|null $value
+     * @return $this|null
      */
-    public function setFrom(int $value): self
+    public function setFrom(int|null $value): self|null
     {
-        $this->from = $value;
-        return $this;
+        if ($value) {
+            $this->from = $value;
+            return $this;
+        }
+
+        return null;
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @param int|null $value
+     * @return $this|null
      */
-    public function setSeconds(int $value): self
+    public function setSeconds(int|null $value): self|null
     {
-        $this->seconds = $value;
-        return $this;
+        if ($value) {
+            $this->seconds = $value;
+            return $this;
+        }
+
+        return null;
     }
 
     /**
@@ -71,35 +79,27 @@ abstract class BaseProcessor
     }
 
     /**
-     * @param string $name
+     * @param null|string $name
      * @param bool $isGif
      * @return string
      */
-    protected function thumbnailStorageSource(string $name = "", bool $isGif = false): string
+    protected function captureStorageDestination(null|string $name, bool $isGif = false): string
     {
+        if (is_null($name)) {
+            $this->console?->error('You must specify a filename.');
+            return false;
+        }
+
         if (is_file($name)) {
             return $name;
         }
 
         $folder = $isGif ? 'gifs' : 'jpegs';
-        $directory = $_ENV['IMAGE_STORAGE_SOURCE'] . '/' . $folder;
+        $directory = $_ENV['CAPTURE_STORAGE_DESTINATION'] . '/' . $folder;
 
-        return $directory . '/' . $name;
-    }
-
-    /**
-     * @param string $name
-     * @param bool $isGif
-     * @return string
-     */
-    protected function thumbnailStorageDestination(string $name, bool $isGif = false): string
-    {
-        if (is_file($name)) {
-            return $name;
+        if (!file_exists($directory)) {
+            mkdir($directory);
         }
-
-        $folder = $isGif ? 'gifs' : 'jpegs';
-        $directory = $_ENV['IMAGE_STORAGE_DESTINATION'] . '/' . $folder;
 
         return $directory . '/' . $name;
     }

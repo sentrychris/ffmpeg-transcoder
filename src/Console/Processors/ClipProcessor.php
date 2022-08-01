@@ -21,20 +21,20 @@ class ClipProcessor extends BaseProcessor
     }
 
     /**
-     * @param mixed $name
+     * @param null|string $name
      * @param bool $bulkMode
      * @return array
      */
-    public function run(mixed $name = null, bool $bulkMode = false): array
+    public function run(null|string $name = null, bool $bulkMode = false): array
     {
-        if (is_null($name) && $bulkMode) {
+        if ($bulkMode && is_null($name)) {
             $files = array_slice(scandir($this->videoStorageSource()), 2);
             foreach ($files as $file) {
-                $this->ffmpegClip($file);
+                $this->clip($file);
             }
         } else {
             if (!file_exists($this->clipStorageDestination($name))) {
-                $this->ffmpegClip($name);
+                $this->clip($name);
             }
         }
 
@@ -49,7 +49,7 @@ class ClipProcessor extends BaseProcessor
      * @param string $name
      * @return void
      */
-    private function ffmpegClip(string $name): void
+    private function clip(string $name): void
     {
         try {
             $media = $this->openVideo($this->videoStorageSource($name));

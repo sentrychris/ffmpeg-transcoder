@@ -5,7 +5,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Application;
 use Illuminate\Container\Container;
 
-use Rowles\Console\Commands\GenerateThumbnailCommand;
+use Rowles\Console\Commands\CaptureCommand;
 use Rowles\Console\Commands\ClipCommand;
 use Rowles\Console\Commands\TranscodeVideoCommand;
 
@@ -22,7 +22,7 @@ $dispatcher = new Dispatcher;
 $app = new Application($container, $dispatcher, $version);
 $app->setName('PHP FFmpeg');
 
-$app->add(new GenerateThumbnailCommand);
+$app->add(new CaptureCommand);
 $app->add(new ClipCommand);
 $app->add(new TranscodeVideoCommand);
 

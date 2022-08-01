@@ -2,16 +2,18 @@
 
 namespace Rowles\Console;
 
+use Illuminate\Console\OutputStyle;
+
 class OutputHandler
 {
     /**
      * @param array $process
-     * @param $console
-     * @param $identifier
+     * @param OutputStyle $output
+     * @param string $identifier
      */
-    public static function handle(array $process, $console, $identifier)
+    public static function handle(array $process, OutputStyle $output, string $identifier)
     {
-        $console = new OutputFormatter($console);
+        $console = new OutputFormatter($output);
 
         if ($process['status'] === 'error') {
             if ($process['errors'][$identifier] > 0) {
